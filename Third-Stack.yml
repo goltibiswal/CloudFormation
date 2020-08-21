@@ -1,0 +1,51 @@
+Description:  This template deploys two EC2 instances in two different existing private subnets.
+
+Parameters:
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Type: String
+  InstanceType:
+    Description: WebServer EC2 instance type (has default, AllowedValues)
+    Type: String
+    Default: t2.small
+    AllowedValues:
+          - t1.micro
+          - t2.nano
+          - t2.micro
+          - t2.small
+  MySubnetIDs:
+     Description: Subnet IDs that is a List of Subnet Id
+     Type: List<AWS::EC2::Subnet::Id>
+  MySecurityGroups:
+     Description: List of Security Group IDs
+     Type: List<AWS::EC2::SecurityGroup::Id>
+
+  
+Resources:
+  
+  MyInstance1:
+        Type: AWS::EC2::Instance
+        Properties:
+          SubnetId: !Select [0, !Ref MySubnetIDs] 
+          ImageId: ami-01df81788f1c7d639
+          InstanceType: t2.micro
+          SecurityGroupIds: !Ref MySecurityGroups
+          Tags:
+            - Key: Name
+              Value: !Sub ${EnvironmentName} Private Web-Server
+  MyInstance2:
+         Type: AWS::EC2::Instance
+         Properties:
+           SubnetId: !Select [1, !Ref MySubnetIDs] 
+           ImageId: ami-01df81788f1c7d639
+           InstanceType: t2.micro
+           SecurityGroupIds: !Ref MySecurityGroups
+           Tags:
+            - Key: Name
+              Value: !Sub ${EnvironmentName} Private Web-Server
+    
+Outputs:
+
+  EC2Instance:
+    Description: EC2 instances launced in private subnet
+    Value: !Join [ ",", [ !Ref MyInstance1, !Ref MyInstance2]]

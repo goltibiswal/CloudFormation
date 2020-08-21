@@ -1,0 +1,8 @@
+Resources:
+    MyFirstInstance:
+        Type: AWS::EC2::Instance
+        Properties:
+            ImageId: ami-01df81788f1c7d639
+            InstanceType: t2.micro
+            SecurityGroupIds:
+                - !ImportValue SSG-SG-Stack-SSHSecurityGroup

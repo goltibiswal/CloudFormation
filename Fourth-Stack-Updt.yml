@@ -1,0 +1,50 @@
+Parameters:
+    EnvironmentName:
+        Description: Required environment name 
+        Type: String
+        AllowedValues: 
+            - Production
+            - Development
+        Default: Production
+    KeyNameList:
+        Description: List all the available keys
+        Type: AWS::EC2::KeyPair::KeyName
+        ConstraintDescription: must be the name of an existing EC2 KeyPair
+Mappings:
+    AmiIdMapping:
+        Description: Mapping of AMI-Ids based on Region
+        us-east-1:
+            AmzLinux: ami-02354e95b39ca8dec
+        ap-southeast-1:
+            AmzLinux: ami-0cd31be676780afa7
+    InstanceTypeMapping:
+        Description: Mapping of environment to instance Type
+        Production:
+            instanceType: t2.small
+        Development:
+            instanceType: t2.micro
+Resources:
+    MyEc2Instance:
+        Type: AWS::EC2::Instance
+        Properties:
+            ImageId: !FindInMap [AmiIdMapping, !Ref 'AWS::Region', AmzLinux]
+            InstanceType: !FindInMap [InstanceTypeMapping, !Ref 'EnvironmentName',instanceType]
+            KeyName: !Ref KeyNameList
+Outputs:
+    InstanceId:
+        Description: EC2 instance launced in private subnet
+        Value: !Ref MyEc2Instance
+    PublicDns:
+        Description: Public DNS name attached to EC2
+        Value: !GetAtt
+            -  MyEc2Instance
+            -  PublicDnsName
+    PublicIP:
+        Description: Public DNS name attached to EC2
+        Value: !GetAtt 
+            - MyEc2Instance
+            - PublicIp
+ 
+
+
+
